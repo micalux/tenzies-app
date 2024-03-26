@@ -47,6 +47,8 @@ export default function App() {
         setTenzies(false)
 
     } else {
+        setRollCount(oldCount => oldCount + 1)
+        console.log(rollCount)
         setDice(oldDice => oldDice.map(die => {
             return die.isHeld ? 
                 die :
@@ -81,6 +83,7 @@ export default function App() {
             {diceElements}
         </div>
         <button className="roll-dice" onClick={rollDice}>{tenzies ? 'New Game' : 'Roll'}</button>
+        <p className="tot-rollz">Total rolls: {rollCount}</p>
     </main>
   )
 }
