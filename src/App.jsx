@@ -1,60 +1,79 @@
-import Die from "./components/Die.jsx"
-import Confetti from "./components/Confetti.jsx"
-import React, { useEffect } from "react"
+import React from "react"
+import Die from "./components/Die"
 import {nanoid} from "nanoid"
+import Confetti from "./components/Confetti"
 
 export default function App() {
 
-    // - add dots on diece faces
-    // - keep track of total rolls
-    // - keep track of total time required to complete
-    // - save best roll number to local storage
-
+    const [isStarted, setIsStarted] = React.useState(false)
     const [dice, setDice] = React.useState(allNewDice())
     const [tenzies, setTenzies] = React.useState(false)
-    const [rollCount, setRollCount] = React.useState(0)
+    const [rolls, setRolls] = React.useState(0)
 
-    const countFromStorage = JSON.parse(localStorage.getItem("count"))
-    const [bestScore, setBestScore] = React.useState(countFromStorage ? countFromStorage : "")
+    const [startTime, setStartTime] = React.useState(null)
+    const [timeElapsed, setTimeElapsed] = React.useState(0)
+    const [timerActive, setTimerActive] = React.useState(false)
 
+    // const [bestTime, setBestTime] = React.useState(null)
 
+    console.log(isStarted)
 
+  
 
+    function formatTime() {
+        if (timerActive) {
+            const totalSeconds = Math.floor(timeElapsed / 1000).toString().padStart(2, '0')
+            const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
+            const seconds = totalSeconds % 60
+                return `${minutes}:${seconds}`
+        } else {
+            return 0
+        }
+    }
 
+    React.useEffect(() => {
+        let interval;
+        if (timerActive) {
+            interval = setInterval(() => {
+                setTimeElapsed(Date.now() - startTime)
+            }, 1000)
+        }
+    
+        return () => clearInterval(interval)
+    }, [timerActive, startTime])
 
-    // console.log(countFromStorage)
-
+    React.useEffect(() => {
+        if (tenzies) {
+            setTimerActive(false)
+            setIsStarted(false)
+        }
+    }, [tenzies])
 
     React.useEffect(() => {
         const allHeld = dice.every(die => die.isHeld)
         const firstValue = dice[0].value
-        const sameValue = dice.every(die => die.value === firstValue)
-        if (allHeld && sameValue) {
+        const allSameValue = dice.every(die => die.value === firstValue)
+        if (allHeld && allSameValue) {
             setTenzies(true)
         }
     }, [dice])
 
-
-    function determineBestScore() {
-        if (rollCount < bestScore) {
-            setBestScore(oldBest => rollCount)
-            
-        } 
-    }
-
-    React.useEffect(() => {
-        localStorage.setItem("count", JSON.stringify(bestScore))
-    }, [bestScore])
-
-
     function generateNewDie() {
-        return {
-            value: Math.ceil(Math.random() * 6),
-            isHeld: false,
-            id: nanoid()
+        if (isStarted) {
+            return {
+                value: Math.ceil(Math.random() * 6),
+                isHeld: false,
+                id: nanoid()
+            }
+        } else {
+            return {
+                value: '?',
+                isHeld: false,
+                id: nanoid()
+            }
         }
     }
-
+    
     function allNewDice() {
         const newDice = []
         for (let i = 0; i < 10; i++) {
@@ -62,24 +81,40 @@ export default function App() {
         }
         return newDice
     }
-
+    
+    function handleClick() {
+        if (!isStarted) {
+            startNewGame()
+        } else {
+            rollDice()
+        }
+    }
 
     function rollDice() {
-    if (tenzies) {
-        setDice(allNewDice())
-        setRollCount(0)
+            setRolls((prevRolls) => prevRolls + 1)
+            setDice(oldDice => oldDice.map(die => {
+                return die.isHeld ? 
+                    die :
+                    generateNewDie()
+            }))     
+    }
+
+    function startNewGame() {
+        setIsStarted(true)
         setTenzies(false)
+        setDice(allNewDice())
+        setStartTime(Date.now())
+        setRolls(0)
+        setTimerActive(true)
+        setTimeElapsed(0)
+}
 
-    } else {
-        setRollCount(oldCount => oldCount + 1)
-        setDice(oldDice => oldDice.map(die => {
-            return die.isHeld ? 
-                die :
-                generateNewDie()
-        }))
+    function reset() {
+        setTimerActive(false)
+        setRolls(0)
+        setIsStarted(false)
     }
-    }
-
+    
     function holdDice(id) {
         setDice(oldDice => oldDice.map(die => {
             return die.id === id ? 
@@ -87,7 +122,7 @@ export default function App() {
                 die
         }))
     }
-
+    
     const diceElements = dice.map(die => (
         <Die 
             key={die.id} 
@@ -97,20 +132,24 @@ export default function App() {
         />
     ))
 
+   
+    
     return (
-    <main>
-        {tenzies && <Confetti />}
-        <h1 className="title">Tenzies</h1>
-        <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
-        <div className="dice-container">
-            {diceElements}
-        </div>
-        <button className="roll-dice" onClick={rollDice}>{tenzies ? 'New Game' : 'Roll'}</button>
-        <div className="best-container">
-            {/* <p className="tot-rollz">My best time: xxxx</p> */}
-            <p className="tot-rollz">Total rolls: {rollCount}</p>
-            {bestScore && <p className="tot-rollz">Best score: {bestScore}</p>}
-        </div>
-    </main>
+        <main>
+            {tenzies && <Confetti />}
+            {/* <h5 className="reset" onClick={reset}>RESET</h5> */}
+            <h1 className="title">Tiro a Muzzo</h1>
+            <p className="instructions">Arrulla finu a quannu tutti li dadi sunnu uguali.<br/>
+                Clicca ncapu a ogni matrici pi ghiacciarilu ô so valuri attuali.</p>
+            <div className="dice-container">
+                {diceElements}
+            </div>
+            <button className="roll-dice" onClick={handleClick}>{!isStarted || tenzies ? 'Nova Pattita' : 'Arrulla'}</button>
+            <div className="game-data">
+                <p><span className="bold">Tempu totale: </span>{timerActive ? formatTime() : '00:00'}</p>
+                <p><span className="bold">Tiri: <br/></span>{rolls}</p>
+                <p><span className="bold">Megghiu tempu: </span>00:00</p>
+            </div>
+        </main>
     )
 }
