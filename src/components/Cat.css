@@ -4,7 +4,7 @@
     left: -400px; /* Start just outside the left edge */
     width: 700px;
     padding-bottom: calc(400 / 700 * 100%); /* Maintain aspect ratio */
-    background-image: url('src/imgs/lucy.png'); /* Use your cat image */
+    background-image: url('../imgs/lucy.png'); /* Use your cat image */
     background-size: contain; /* Ensure the entire image is visible */
     background-repeat: no-repeat; /* Ensure no repeat */
     animation: moveCat 7s linear forwards;}
