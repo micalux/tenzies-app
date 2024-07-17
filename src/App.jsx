@@ -58,6 +58,17 @@ export default function App() {
         if (tenzies) {
             setTimerActive(false)
             setIsStarted(false)
+            const audio = document.getElementById('cat-sound');
+            if (audio) {
+                audio.play();
+            }
+        }
+    }, [tenzies])
+
+    React.useEffect(() => {
+        if (tenzies) {
+            setTimerActive(false)
+            setIsStarted(false)
         }
     }, [tenzies])
 
@@ -103,12 +114,12 @@ export default function App() {
     }
 
     function rollDice() {
-            setRolls((prevRolls) => prevRolls + 1)
-            setDice(oldDice => oldDice.map(die => {
-                return die.isHeld ? 
-                    die :
-                    generateNewDie()
-            }))     
+        setRolls((prevRolls) => prevRolls + 1)
+        setDice(oldDice => oldDice.map(die => {
+            return die.isHeld ? 
+                die :
+                generateNewDie()
+        }))     
     }
 
     function startNewGame() {
@@ -154,7 +165,7 @@ function reset() {
     return (
         <main>
             {tenzies && <Cat />}
-            <h5 className="reset" onClick={tenziesTrue}>RESET</h5>
+            <h5 className="reset" onClick={reset}>RESET</h5>
             <h1 className="title">{title}</h1>
             <p className="instructions">{instructionsFirst}</p>
             <p className="instructions">{instructionsSecond}</p>
