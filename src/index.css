@@ -21,6 +21,11 @@ main {
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
 }
  
 .title {
@@ -33,17 +38,18 @@ main {
 .instructions {
   font-family: 'Inter', sans-serif;
   font-weight: 400;
-  margin-top: 0.4em;
-  margin-bottom: 2.5em;
+  margin: 0;
+  margin-top: 0.3em;
+  /* margin-bottom: 2.5em; */
   text-align: center;
-  line-height: 1.3;
+  /* line-height: 1.3; */
 }
 
 .dice-container {
   display: grid;
   grid-template: auto auto / repeat(5, 1fr);
   gap: 20px;
-  /* margin-top: 20px; */
+  margin-top: 40px;
   margin-bottom: 30px;
 }
 

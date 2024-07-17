@@ -1,12 +1,24 @@
 import React from "react"
 import Die from "./components/Die"
-import {nanoid} from "nanoid"
+import { nanoid } from "nanoid"
 import Confetti from "./components/Confetti"
+import Cat from "./components/Cat"
+import { 
+    title, 
+    instructionsFirst, 
+    instructionsSecond,
+    buttonOne,
+    buttonTwo,
+    time,
+    rollsNumber,
+    bestTime,
+} from "./Text"
+
 
 export default function App() {
 
     const [isStarted, setIsStarted] = React.useState(false)
-    const [dice, setDice] = React.useState(allNewDice())
+    const [dice, setDice] = React.useState(initialDice())
     const [tenzies, setTenzies] = React.useState(false)
     const [rolls, setRolls] = React.useState(0)
 
@@ -22,12 +34,12 @@ export default function App() {
 
     function formatTime() {
         if (timerActive) {
-            const totalSeconds = Math.floor(timeElapsed / 1000).toString().padStart(2, '0')
+            const totalSeconds = Math.floor(timeElapsed / 1000)
             const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0')
-            const seconds = totalSeconds % 60
-                return `${minutes}:${seconds}`
+            const seconds = (totalSeconds % 60).toString().padStart(2, '0')
+            return `${minutes}:${seconds}`
         } else {
-            return 0
+            return '00:00'
         }
     }
 
@@ -58,20 +70,20 @@ export default function App() {
         }
     }, [dice])
 
-    function generateNewDie() {
-        if (isStarted) {
-            return {
-                value: Math.ceil(Math.random() * 6),
-                isHeld: false,
-                id: nanoid()
-            }
-        } else {
-            return {
-                value: '?',
-                isHeld: false,
-                id: nanoid()
-            }
+    function generateNewDie(value = Math.ceil(Math.random() * 6)) {
+        return {
+            value: value,
+            isHeld: false,
+            id: nanoid()
         }
+    }
+
+    function initialDice() {
+        const newDice = []
+        for (let i = 0; i < 10; i++) {
+            newDice.push(generateNewDie('?'))
+        }
+        return newDice
     }
     
     function allNewDice() {
@@ -102,18 +114,23 @@ export default function App() {
     function startNewGame() {
         setIsStarted(true)
         setTenzies(false)
-        setDice(allNewDice())
         setStartTime(Date.now())
         setRolls(0)
         setTimerActive(true)
         setTimeElapsed(0)
-}
-
-    function reset() {
-        setTimerActive(false)
-        setRolls(0)
-        setIsStarted(false)
+        setDice(allNewDice())
     }
+
+    function tenziesTrue() {
+        setTenzies(true)
+    }
+
+function reset() {
+    setTimerActive(false)
+    setRolls(0)
+    setIsStarted(false)
+    setDice(initialDice())
+}
     
     function holdDice(id) {
         setDice(oldDice => oldDice.map(die => {
@@ -136,19 +153,19 @@ export default function App() {
     
     return (
         <main>
-            {tenzies && <Confetti />}
-            {/* <h5 className="reset" onClick={reset}>RESET</h5> */}
-            <h1 className="title">Tiro a Muzzo</h1>
-            <p className="instructions">Arrulla finu a quannu tutti li dadi sunnu uguali.<br/>
-                Clicca ncapu a ogni matrici pi ghiacciarilu ô so valuri attuali.</p>
+            {tenzies && <Cat />}
+            <h5 className="reset" onClick={tenziesTrue}>RESET</h5>
+            <h1 className="title">{title}</h1>
+            <p className="instructions">{instructionsFirst}</p>
+            <p className="instructions">{instructionsSecond}</p>
             <div className="dice-container">
                 {diceElements}
             </div>
-            <button className="roll-dice" onClick={handleClick}>{!isStarted || tenzies ? 'Nova Pattita' : 'Arrulla'}</button>
+            <button className="roll-dice" onClick={handleClick}>{!isStarted || tenzies ? buttonOne : buttonTwo}</button>
             <div className="game-data">
-                <p><span className="bold">Tempu totale: </span>{timerActive ? formatTime() : '00:00'}</p>
-                <p><span className="bold">Tiri: <br/></span>{rolls}</p>
-                <p><span className="bold">Megghiu tempu: </span>00:00</p>
+                <p><span className="bold">{time}</span><br/>{timerActive ? formatTime() : '00:00'}</p>
+                <p><span className="bold">{rollsNumber} <br/></span>{rolls}</p>
+                <p><span className="bold">{bestTime} </span><br/>00:00</p>
             </div>
         </main>
     )
