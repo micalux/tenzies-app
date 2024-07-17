@@ -154,7 +154,7 @@ function reset() {
     return (
         <main>
             {tenzies && <Cat />}
-            <h5 className="reset" onClick={tenziesTrue}>RESET</h5>
+            <h5 className="reset" onClick={reset}>RESET</h5>
             <h1 className="title">{title}</h1>
             <p className="instructions">{instructionsFirst}</p>
             <p className="instructions">{instructionsSecond}</p>
