@@ -4,14 +4,14 @@
     left: -400px; /* Start just outside the left edge */
     width: 700px;
     padding-bottom: calc(400 / 700 * 100%); /* Maintain aspect ratio */
-    background-image: url('public/lucy.png'); /* Use your cat image */
+    background-image: url('/lucy.png'); /* Use your cat image */
     background-size: contain; /* Ensure the entire image is visible */
     background-repeat: no-repeat; /* Ensure no repeat */
     animation: moveCat 7s linear forwards;}
 
 @keyframes moveCat {
     0% {
-        left: -700px; /* Start just outside the left edge */
+        left: -400px; /* Start just outside the left edge */
     }
     100% {
         left: calc(100% + 700px); /* Move just outside the right edge */
